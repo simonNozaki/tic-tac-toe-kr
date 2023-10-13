@@ -32,6 +32,7 @@ val Board = FC<BoardProps> {
             val nextSquares = values.toMutableList()
             nextSquares[index] = if (isXNext) "X" else "O"
             values = nextSquares
+            isXNext = !isXNext
         }
     }
     val winner = GameRule(values).getWinner()
