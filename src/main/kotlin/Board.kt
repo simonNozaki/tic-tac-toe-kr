@@ -6,9 +6,16 @@ import react.Props
 import react.dom.events.MouseEventHandler
 import react.dom.html.ReactHTML.button
 import react.dom.html.ReactHTML.div
+import react.dom.html.ReactHTML.ol
 import react.useState
 
-external interface BoardProps : Props
+external interface GameProps : Props
+
+external interface BoardProps : Props {
+    var isXNext: Boolean
+    var squares: List<String>
+    var onPlay: (List<String>) -> Unit
+}
 
 external interface SquareProps : Props {
     var value: String
@@ -24,20 +31,17 @@ val Square = FC<SquareProps> { props ->
     }
 }
 
-val Board = FC<BoardProps> {
-    var isXNext by useState(true)
-    var values by useState(MutableList(9) { "" })
+val Board = FC<BoardProps> { props ->
     fun handleClick(index: Int): MouseEventHandler<HTMLButtonElement> = {
-        if (values[index].isEmpty()) {
-            val nextSquares = values.toMutableList()
-            nextSquares[index] = if (isXNext) "X" else "O"
-            values = nextSquares
-            isXNext = !isXNext
+        if (props.squares[index].isEmpty()) {
+            val nextSquares = props.squares.toMutableList()
+            nextSquares[index] = if (props.isXNext) "X" else "O"
+            props.onPlay(nextSquares)
         }
     }
-    val winner = GameRule(values).getWinner()
-    var status: String = ""
-    status = if (winner == "\$NONE") "Next player is: ${if (isXNext) "X" else "O"}" else "Winner: $winner"
+    val winner = GameRule(props.squares).getWinner()
+    var status = ""
+    status = if (winner == "\$NONE") "Next player is: ${if (props.isXNext) "X" else "O"}" else "Winner: $winner"
 
     div {
         css {
@@ -48,46 +52,74 @@ val Board = FC<BoardProps> {
     div {
         css(styleBorderRow)
         Square {
-            value = values[0]
+            value = props.squares[0]
             onSquareClick = handleClick(0)
         }
         Square {
-            value = values[1]
+            value = props.squares[1]
             onSquareClick = handleClick(1)
         }
         Square {
-            value = values[2]
+            value = props.squares[2]
             onSquareClick = handleClick(2)
         }
     }
     div {
         css(styleBorderRow)
         Square {
-            value = values[3]
+            value = props.squares[3]
             onSquareClick = handleClick(3)
         }
         Square {
-            value = values[4]
+            value = props.squares[4]
             onSquareClick = handleClick(4)
         }
         Square {
-            value = values[5]
+            value = props.squares[5]
             onSquareClick = handleClick(5)
         }
     }
     div {
         css(styleBorderRow)
         Square {
-            value = values[6]
+            value = props.squares[6]
             onSquareClick = handleClick(6)
         }
         Square {
-            value = values[7]
+            value = props.squares[7]
             onSquareClick = handleClick(7)
         }
         Square {
-            value = values[8]
+            value = props.squares[8]
             onSquareClick = handleClick(8)
+        }
+    }
+}
+
+val Game = FC<GameProps> {
+    var isXNext by useState(true)
+    var history by useState(mutableListOf(MutableList(9) { "" }))
+    val currentSquares = history.last()
+    fun handlePlay(): (List<String>) -> Unit = { squares: List<String> ->
+        isXNext = !isXNext
+        val nextHistory = history.toMutableList()
+        nextHistory.add(squares.toMutableList())
+        history = nextHistory
+    }
+
+    div {
+        css(styleGame)
+        div {
+            css(styleGameBoard)
+            Board {
+                isXNext = !isXNext
+                squares = currentSquares
+                onPlay = handlePlay()
+            }
+        }
+        div {
+            css(styleGameInfo)
+            ol {}
         }
     }
 }

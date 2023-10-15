@@ -1,10 +1,4 @@
-import csstype.Clear
-import csstype.Display
-import csstype.Float
-import csstype.FontWeight
-import csstype.PropertiesBuilder
-import csstype.px
-import csstype.rgb
+import csstype.*
 
 val styleSquare: PropertiesBuilder.() -> Unit = {
     backgroundColor = rgb(255, 255, 255)
@@ -23,4 +17,16 @@ val styleSquare: PropertiesBuilder.() -> Unit = {
 val styleBorderRow: PropertiesBuilder.() -> Unit = {
     clear = Clear.both
     display = Display.table
+}
+
+val styleGame: PropertiesBuilder.() -> Unit = {
+    display = Display.flex
+    flexDirection = FlexDirection.row
+}
+
+val styleGameBoard: PropertiesBuilder.() -> Unit = {
+}
+
+val styleGameInfo: PropertiesBuilder.() -> Unit = {
+    marginLeft = 20.px
 }
